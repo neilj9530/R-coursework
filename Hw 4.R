@@ -1,0 +1,25 @@
+print(head(reaction.time, 5))
+model1 = aov(y ~ factor(Trtmt), data=reaction.time)
+reaction.time = within(reaction.time, {ypred = fitted(model1); e = resid(model1); z = e/sd(e); n = length(e); q = rank(e); nscore = qnorm((q-0.375)/(n+0.25)) })
+print(head(reaction.time, 3), digits = 4)
+plot(z ~ Trtmt, data=reaction.time, ylab = "Standardized Residuals", las = 1)
+  abline(h=0)
+plot(z ~ Order, data=reaction.time, ylab = "Standardized Residuals", las=1)  
+  abline(h=0)
+plot(z ~ ypred, data=reaction.time, ylab = "Standardized Residuals", las=1)
+  abline(h=0)
+plot(z ~ nscore, data=reaction.time, ylab = "Standardized Residuals", las=1)
+  qqline(reaction.time$z)
+
+MeanTime = by(reaction.time$y, reaction.time$Trtmt, mean)
+VarTime = by(reaction.time$y, reaction.time$Trtmt, var)
+LnMean = log(MeanTime)
+LnVar = log(VarTime)
+Trtmt = c(1:6)
+stats = cbind(Trtmt, MeanTime, VarTime, LnMean, LnVar)
+stats
+plot(LnVar ~ LnMean, las=1)
+  by(reaction.time$z, reaction.time$Trtmt, qqnorm)
+
+  
+pf(3.938, 3, 28, lower.tail = FALSE)
